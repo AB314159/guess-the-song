@@ -1,11 +1,12 @@
-// game.js - updated to use 'Correct' button instead of typed input, plus paste support in add-songs.html
+// game.js - supports unique question per team per round
 let currentTeamIndex = 0;
 let currentClue = 0;
 let teams = [];
-let songs = [];
+let allSongs = [];
 let round = 1;
 let scores = [];
 let roundScores = [];
+let roundSongs = []; // <-- NEW: per-round song assignments
 let timeLeft = 15;
 let timerInterval;
 let selectedDifficulty = "easy";
@@ -13,8 +14,10 @@ let clueAnswered = false;
 
 function loadGame() {
   teams = JSON.parse(localStorage.getItem("teams")) || ["Team 1", "Team 2"];
+  allSongs = JSON.parse(localStorage.getItem("songs")) || [];
   scores = teams.map(() => 0);
   roundScores = [];
+  roundSongs = [];
   showDifficultySelector();
 }
 
@@ -33,15 +36,26 @@ function showDifficultySelector() {
 
 function startRound() {
   selectedDifficulty = document.getElementById("difficultySelect").value;
-  const allSongs = JSON.parse(localStorage.getItem("songs")) || [];
-  songs = allSongs.filter(song => song.difficulty === selectedDifficulty);
-  if (songs.length < teams.length) {
+  const filteredSongs = allSongs.filter(song => song.difficulty === selectedDifficulty);
+  
+  if (filteredSongs.length < teams.length) {
     alert("Not enough songs of this difficulty for all teams!");
     return;
   }
+
+  // Shuffle and assign unique songs to each team
+  const availableSongs = [...filteredSongs];
+  const roundSongSet = [];
+  for (let i = 0; i < teams.length; i++) {
+    const randIndex = Math.floor(Math.random() * availableSongs.length);
+    roundSongSet.push(availableSongs.splice(randIndex, 1)[0]);
+  }
+  roundSongs[round - 1] = roundSongSet;
+  roundScores[round - 1] = teams.map(() => 0);
+  
   currentTeamIndex = 0;
   currentClue = 0;
-  roundScores[round - 1] = teams.map(() => 0);
+
   renderGameUI();
   showClue();
   startTimer();
@@ -64,7 +78,7 @@ function renderGameUI() {
 }
 
 function showClue() {
-  const currentSong = songs[currentTeamIndex];
+  const currentSong = roundSongs[round - 1][currentTeamIndex];
   if (!currentSong) return;
   document.getElementById("clueImage").src = currentSong.images[currentClue];
   document.getElementById("feedback").textContent = "";
@@ -94,11 +108,12 @@ function startTimer() {
 function markCorrect() {
   if (clueAnswered) return;
   clearInterval(timerInterval);
-  const points = [5, 3, 1][currentClue];
+  const currentSong = roundSongs[round - 1][currentTeamIndex];
+  const points = [5, 3, 1][currentClue] || 0;
   scores[currentTeamIndex] += points;
   roundScores[round - 1][currentTeamIndex] = points;
   document.getElementById("feedback").textContent = `Correct! +${points} points`;
-  showYouTube(songs[currentTeamIndex].youtube);
+  showYouTube(currentSong.youtube);
   clueAnswered = true;
 }
 
@@ -107,7 +122,7 @@ function nextClue() {
   if (currentClue < 3) {
     showClue();
   } else {
-    const currentSong = songs[currentTeamIndex];
+    const currentSong = roundSongs[round - 1][currentTeamIndex];
     document.getElementById("feedback").textContent = `All clues used. The correct answer was: ${currentSong.name}`;
     showYouTube(currentSong.youtube);
   }
