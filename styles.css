@@ -1,3 +1,4 @@
+/* styles.css */
 body {
   margin: 0;
   padding: 0;
@@ -84,13 +85,6 @@ ul {
   font-weight: bold;
   margin: 15px 0;
   color: #e53e3e;
-  animation: pulse 1s infinite ease-in-out;
-}
-
-@keyframes pulse {
-  0% { transform: scale(1); }
-  50% { transform: scale(1.1); }
-  100% { transform: scale(1); }
 }
 
 #feedback {
@@ -105,4 +99,21 @@ ul {
   border: none;
   margin-top: 20px;
   border-radius: 12px;
+}
+
+#endRoundButton, #nextClueButton {
+  display: inline-block;
+  padding: 10px 20px;
+  background-color: #e53e3e;
+  color: white;
+  border: none;
+  border-radius: 6px;
+  margin-top: 20px;
+  font-size: 16px;
+  cursor: pointer;
+  transition: background-color 0.3s;
+}
+
+#endRoundButton:hover, #nextClueButton:hover {
+  background-color: #c53030;
 }
