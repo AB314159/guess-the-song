@@ -1,9 +1,9 @@
-/* styles.css */
 body {
   margin: 0;
   padding: 0;
   font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
   background: linear-gradient(145deg, #f0f4f8, #dbe9f4);
+  background-color: #f0f4f8; /* Fallback color */
   color: #333;
 }
 
@@ -52,6 +52,11 @@ select {
 
 input[type="file"] {
   margin: 8px 0;
+  border: 1px solid #999;
+  padding: 8px;
+  background-color: #f9f9f9;
+  border-radius: 6px;
+  width: 80%;
 }
 
 form label {
@@ -75,10 +80,17 @@ ul {
 }
 
 #timer {
-  font-size: 20px;
+  font-size: 24px;
   font-weight: bold;
   margin: 15px 0;
   color: #e53e3e;
+  animation: pulse 1s infinite ease-in-out;
+}
+
+@keyframes pulse {
+  0% { transform: scale(1); }
+  50% { transform: scale(1.1); }
+  100% { transform: scale(1); }
 }
 
 #feedback {
