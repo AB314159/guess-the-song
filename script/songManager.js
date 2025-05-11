@@ -1,6 +1,11 @@
 document.addEventListener("DOMContentLoaded", () => {
   const form = document.getElementById("songForm");
 
+  if (!form) {
+    alert("Form not found!");
+    return;
+  }
+
   form.addEventListener("submit", (e) => {
     e.preventDefault();
 
@@ -30,7 +35,7 @@ document.addEventListener("DOMContentLoaded", () => {
     alert("Song added successfully!");
     form.reset();
 
-    // Reset the image boxes visually
+    // Reset visuals
     ["box5", "box3", "box1"].forEach(id => {
       document.getElementById(id).innerHTML = `Paste ${id.replace("box", "")} Point Image Here`;
     });
