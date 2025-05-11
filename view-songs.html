@@ -1,0 +1,42 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>View Songs</title>
+  <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+  <div class="container">
+    <h1>Song List</h1>
+    <div id="songList"></div>
+    <a href="index.html" class="btn">Home</a>
+  </div>
+  <script>
+    document.addEventListener("DOMContentLoaded", () => {
+      const listDiv = document.getElementById("songList");
+      const songs = JSON.parse(localStorage.getItem("songs")) || [];
+
+      if (songs.length === 0) {
+        listDiv.innerHTML = "<p>No songs available.</p>";
+        return;
+      }
+
+      songs.forEach((song, index) => {
+        const songDiv = document.createElement("div");
+        songDiv.style.marginBottom = "20px";
+        songDiv.innerHTML = `
+          <strong>${index + 1}. ${song.name}</strong><br>
+          Difficulty: ${song.difficulty}<br>
+          <a href="${song.youtube}" target="_blank">YouTube Link</a><br>
+          Clue Images:<br>
+          <img src="${song.images[0]}" style="height:50px;"> 
+          <img src="${song.images[1]}" style="height:50px;"> 
+          <img src="${song.images[2]}" style="height:50px;">
+        `;
+        listDiv.appendChild(songDiv);
+      });
+    });
+  </script>
+</body>
+</html>
