@@ -5,26 +5,77 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>Add Songs</title>
   <link rel="stylesheet" href="styles.css" />
+  <style>
+    .image-box {
+      border: 2px dashed #ccc;
+      padding: 20px;
+      text-align: center;
+      cursor: pointer;
+      margin-bottom: 10px;
+    }
+
+    .image-box img {
+      max-width: 100%;
+      max-height: 150px;
+      display: block;
+      margin: auto;
+    }
+  </style>
 </head>
 <body>
   <div class="container">
     <h1>Add a Song</h1>
-    <form id="songForm">
-      <input type="text" placeholder="Song Name" required /><br />
-      <select required>
+    <form id="songForm" method="POST" action="script/songManager.js">
+      <input type="text" name="songName" placeholder="Song Name" required /><br />
+      <select name="difficulty" required>
         <option value="">Select Difficulty</option>
         <option value="easy">Easy</option>
         <option value="medium">Medium</option>
         <option value="hard">Hard</option>
       </select><br />
-      <input type="url" placeholder="YouTube URL" required /><br />
-      <label>5 Point Image: <input type="file" accept="image/*" required /></label><br />
-      <label>3 Point Image: <input type="file" accept="image/*" required /></label><br />
-      <label>1 Point Image: <input type="file" accept="image/*" required /></label><br />
+      <input type="url" name="youtubeUrl" placeholder="YouTube URL" required /><br />
+
+      <div class="image-box" id="box5" data-name="image5">Paste 5 Point Image Here</div>
+      <div class="image-box" id="box3" data-name="image3">Paste 3 Point Image Here</div>
+      <div class="image-box" id="box1" data-name="image1">Paste 1 Point Image Here</div>
+
+      <input type="hidden" name="image5" id="inputImage5" />
+      <input type="hidden" name="image3" id="inputImage3" />
+      <input type="hidden" name="image1" id="inputImage1" />
+
       <button type="submit" class="btn">Add Song</button>
     </form>
     <a href="index.html" class="btn">Home</a>
   </div>
-  <script src="script/songManager.js"></script>
+
+  <script>
+    function handlePaste(event, boxId, inputId) {
+      const items = (event.clipboardData || event.originalEvent.clipboardData).items;
+      for (let item of items) {
+        if (item.type.indexOf("image") === 0) {
+          const blob = item.getAsFile();
+          const reader = new FileReader();
+          reader.onload = function(e) {
+            const base64 = e.target.result;
+            const box = document.getElementById(boxId);
+            const input = document.getElementById(inputId);
+            box.innerHTML = `<img src="${base64}" alt="Preview" />`;
+            input.value = base64; // inject base64 string into hidden input
+          };
+          reader.readAsDataURL(blob);
+        }
+      }
+    }
+
+    [
+      { boxId: "box5", inputId: "inputImage5" },
+      { boxId: "box3", inputId: "inputImage3" },
+      { boxId: "box1", inputId: "inputImage1" }
+    ].forEach(({ boxId, inputId }) => {
+      const box = document.getElementById(boxId);
+      box.setAttribute("contenteditable", true);
+      box.addEventListener("paste", e => handlePaste(e, boxId, inputId));
+    });
+  </script>
 </body>
 </html>
