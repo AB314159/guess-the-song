@@ -1,10 +1,11 @@
-// game.js - updated with clue control and round management
+// game.js - updated with clue control and round management and score per round
 let currentTeamIndex = 0;
 let currentClue = 0;
 let teams = [];
 let songs = [];
 let round = 1;
 let scores = [];
+let roundScores = [];
 let timeLeft = 15;
 let timerInterval;
 let selectedDifficulty = "easy";
@@ -12,6 +13,7 @@ let selectedDifficulty = "easy";
 function loadGame() {
   teams = JSON.parse(localStorage.getItem("teams")) || ["Team 1", "Team 2"];
   scores = teams.map(() => 0);
+  roundScores = [];
 
   showDifficultySelector();
 }
@@ -41,6 +43,7 @@ function startRound() {
 
   currentTeamIndex = 0;
   currentClue = 0;
+  roundScores[round - 1] = teams.map(() => 0);
   renderGameUI();
   showClue();
   startTimer();
@@ -101,6 +104,7 @@ function submitGuess() {
     clearInterval(timerInterval);
     const points = [5, 3, 1][currentClue];
     scores[currentTeamIndex] += points;
+    roundScores[round - 1][currentTeamIndex] = points;
     document.getElementById("feedback").textContent = `Correct! +${points} points`;
     showYouTube(currentSong.youtube);
     input.disabled = true;
@@ -133,7 +137,8 @@ function nextTeam() {
   currentClue = 0;
 
   if (currentTeamIndex >= teams.length) {
-    alert("Round complete!\nScores: " + scores.map((s, i) => `${teams[i]}: ${s}`).join(", "));
+    const roundResults = roundScores[round - 1].map((score, i) => `${teams[i]}: ${score}`).join(", ");
+    alert(`Round ${round} complete!\nScores this round: ${roundResults}`);
     round++;
     showDifficultySelector();
   } else {
@@ -144,8 +149,12 @@ function nextTeam() {
 }
 
 function endGame() {
-  let results = scores.map((s, i) => `${teams[i]}: ${s}`).join("\n");
-  alert("Final Scores:\n" + results);
+  let finalResults = teams.map((team, i) => {
+    let perRound = roundScores.map((r, index) => `Round ${index + 1}: ${r[i] || 0}`).join(", ");
+    return `${team} → ${scores[i]} pts [ ${perRound} ]`;
+  }).join("\n");
+
+  alert("Final Scores by Round:\n\n" + finalResults);
   window.location.href = "index.html";
 }
 
