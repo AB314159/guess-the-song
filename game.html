@@ -1,0 +1,23 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Game - Guess the Song</title>
+  <link rel="stylesheet" href="styles.css" />
+</head>
+<body>
+  <div class="container" id="gameArea">
+    <h1 id="roundTitle">Round 1</h1>
+    <div id="teamTurn">Team 1's Turn</div>
+    <img id="clueImage" src="" alt="Clue Image" class="clue-img" />
+    <input type="text" id="guessInput" placeholder="Enter your guess" />
+    <button onclick="submitGuess()" class="btn">Submit</button>
+    <div id="timer">Time left: 15s</div>
+    <div id="feedback"></div>
+    <div id="youtubeContainer"></div>
+    <button onclick="nextTeam()" class="btn">Next</button>
+  </div>
+  <script src="script/game.js"></script>
+</body>
+</html>
