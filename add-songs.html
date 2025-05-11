@@ -25,7 +25,7 @@
 <body>
   <div class="container">
     <h1>Add a Song</h1>
-    <form id="songForm" autocomplete="off" novalidate>
+    <form id="songForm" onsubmit="return false;">
       <input type="text" name="songName" placeholder="Song Name" required /><br />
       <select name="difficulty" required>
         <option value="">Select Difficulty</option>
