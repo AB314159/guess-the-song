@@ -84,4 +84,42 @@ function nextTeam() {
   startTimer();
 }
 
+let timerInterval;
+let timeLeft = 15;
+
+function startTimer() {
+  const timerDisplay = document.getElementById("timer");
+  clearInterval(timerInterval); // Clear any existing timer
+  timeLeft = 15;
+  timerDisplay.textContent = `Time left: ${timeLeft}s`;
+
+  timerInterval = setInterval(() => {
+    timeLeft--;
+    timerDisplay.textContent = `Time left: ${timeLeft}s`;
+
+    if (timeLeft <= 5) {
+      timerDisplay.style.color = '#d69e2e'; // Yellow warning
+    }
+    if (timeLeft <= 2) {
+      timerDisplay.style.color = '#e53e3e'; // Red alert
+    }
+
+    if (timeLeft <= 0) {
+      clearInterval(timerInterval);
+      timerDisplay.textContent = "Time's up!";
+      showFeedback("Time's up! Moving to next clue...");
+      currentClue++;
+      if (currentClue < 3) {
+        showClue();
+        startTimer();
+      } else {
+        const currentSong = songs[currentTeamIndex];
+        showFeedback(`Out of attempts. The correct answer was: ${currentSong.name}`);
+        showYouTube(currentSong.youtube);
+      }
+    }
+  }, 1000);
+}
+
+
 document.addEventListener("DOMContentLoaded", loadGame);
