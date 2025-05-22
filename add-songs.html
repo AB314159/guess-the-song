@@ -1,3 +1,4 @@
+<!-- add-songs.html -->
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -13,7 +14,6 @@
       cursor: pointer;
       margin-bottom: 10px;
     }
-
     .image-box img {
       max-width: 100%;
       max-height: 150px;
@@ -47,21 +47,41 @@
     </form>
     <a href="index.html" class="btn">Home</a>
   </div>
+
   <script>
+    async function uploadImage(blob) {
+      const formData = new FormData();
+      formData.append("file", blob);
+
+      const res = await fetch("/upload", {
+        method: "POST",
+        body: formData
+      });
+
+      if (!res.ok) {
+        throw new Error("Upload failed");
+      }
+
+      const data = await res.json();
+      return data.url; // Expect: { url: "/uploads/filename.jpg" }
+    }
+
     function handlePaste(event, boxId, inputId) {
       const items = (event.clipboardData || event.originalEvent.clipboardData).items;
       for (let item of items) {
         if (item.type.indexOf("image") === 0) {
           const blob = item.getAsFile();
-          const reader = new FileReader();
-          reader.onload = function(e) {
-            const base64 = e.target.result;
-            const box = document.getElementById(boxId);
-            const input = document.getElementById(inputId);
-            box.innerHTML = `<img src="${base64}" alt="Preview" />`;
-            input.value = base64; // inject base64 string into hidden input
-          };
-          reader.readAsDataURL(blob);
+          const box = document.getElementById(boxId);
+          const input = document.getElementById(inputId);
+
+          const imgPreview = document.createElement("img");
+          imgPreview.src = URL.createObjectURL(blob);
+          box.innerHTML = "";
+          box.appendChild(imgPreview);
+
+          uploadImage(blob)
+            .then(url => input.value = url)
+            .catch(() => alert("Image upload failed. Please try again."));
         }
       }
     }
@@ -76,7 +96,6 @@
       box.addEventListener("paste", e => handlePaste(e, boxId, inputId));
     });
 
-    // ✅ Form submission handler
     document.getElementById("songForm").addEventListener("submit", (e) => {
       e.preventDefault();
 
@@ -107,13 +126,10 @@
       alert("Song added successfully!");
       form.reset();
 
-      // Clear image boxes
       ["box5", "box3", "box1"].forEach((id, index) => {
         document.getElementById(id).innerHTML = `Paste ${[5, 3, 1][index]} Point Image Here`;
       });
     });
   </script>
-  <script src="/script/songManager.js"></script>
-
 </body>
 </html>
